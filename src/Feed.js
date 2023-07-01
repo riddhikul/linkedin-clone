@@ -9,6 +9,7 @@ import ImageIcon from '@mui/icons-material/Image';
 import SubscriptionsRoundedIcon from '@mui/icons-material/SubscriptionsRounded';
 import EventNoteRoundedIcon from '@mui/icons-material/EventNoteRounded';
 import CalendarViewDayRoundedIcon from '@mui/icons-material/CalendarViewDayRounded';
+import FlipMove from "react-flip-move";
 
 
 
@@ -82,6 +83,7 @@ function Feed() {
         </div>
 
         {/* Posts */}
+        <FlipMove>
         {post.map(({id, data:{name,description, message, photoUrl }})=>(
         <Post
            key={id}
@@ -92,7 +94,7 @@ function Feed() {
         />))}
 
 
-
+</FlipMove>
         
         </div>
   )
