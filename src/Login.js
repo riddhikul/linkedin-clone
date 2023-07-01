@@ -3,6 +3,20 @@ import './Login.css';
 import { auth } from './firebee';
 import { useDispatch } from 'react-redux';
 import { login } from './features/counter/userSlice';
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+
+//const auth = getAuth();
+createUserWithEmailAndPassword(auth, email, password)
+  .then((userCredential) => {
+    // Signed in 
+    const user = userCredential.user;
+    // ...
+  })
+  .catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    // ..
+  });
 
 function Login() {
   const [email, setEmail] = useState('');
