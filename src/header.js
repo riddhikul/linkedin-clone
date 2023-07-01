@@ -7,12 +7,22 @@ import SupervisorAccountRoundedIcon from '@mui/icons-material/SupervisorAccountR
 import BusinessCenterRoundedIcon from '@mui/icons-material/BusinessCenterRounded';
 import TextsmsRoundedIcon from '@mui/icons-material/TextsmsRounded';
 import NotificationsRoundedIcon from '@mui/icons-material/NotificationsRounded';
+import { useDispatch, useSelector } from 'react-redux';
+import { logout, selectUser } from './features/counter/userSlice';
+import { auth } from './firebee';
 
 
 
 
 
 function Header() {
+  //const user = useSelector(selectUser);
+  const dispatch=useDispatch();
+
+  const logoutOfApp=()=>{
+    dispatch(logout())
+    auth.signOut();
+  }
   return (
     // class header begins 
     <div className='header'>
@@ -38,7 +48,7 @@ function Header() {
           <HeaderOption Icon={TextsmsRoundedIcon}  title='Messaging'/>
           <HeaderOption Icon={NotificationsRoundedIcon}  title='Notifications'/>
           {/* <HeaderOption avatar={Mypic} title="Me"/> */}
-          <HeaderOption avatar="./images/Mepic.jpeg" title="Me"/>
+          <HeaderOption avatar title="Me" onClick={logoutOfApp}/>
 
 
           

@@ -3,7 +3,7 @@ import './Login.css';
 import { auth } from './firebee';
 import { useDispatch } from 'react-redux';
 import { login } from './features/counter/userSlice';
-import { getAuth, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, updateProfile, signInWithEmailAndPassword } from "firebase/auth";
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -42,7 +42,19 @@ function Login() {
 
   const loginToApp = (e) => {
     e.preventDefault();
-    // Add your login logic here
+
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+
+        dispatch(login({
+          email: user.email,
+          uid: user.uid,
+          displayName: user.displayName,
+          profileUrl: user.photoURL,
+        }));
+      })
+      .catch((error) => alert(error.message));
   };
 
   return (
@@ -51,7 +63,6 @@ function Login() {
         src="https://1000logos.net/wp-content/uploads/2023/01/LinkedIn-logo-768x432.png"
         alt=""
       />
-      {/* <h1>You are not logged in</h1> */}
       <form>
         <input
           value={name}
@@ -94,6 +105,7 @@ function Login() {
 }
 
 export default Login;
+
 
 
 

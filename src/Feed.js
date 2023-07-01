@@ -14,12 +14,15 @@ import CalendarViewDayRoundedIcon from '@mui/icons-material/CalendarViewDayRound
 
 import 'firebase/firestore';
 import { serverTimestamp } from 'firebase/firestore';
+import { useSelector } from 'react-redux';
+import { selectUser } from './features/counter/userSlice';
 // Other necessary imports
 
 
 
 
 function Feed() {
+    const user = useSelector(selectUser);
     const [input,setInput]=React.useState('');
     const [post, setState] = React.useState([]);
 
@@ -38,10 +41,10 @@ function Feed() {
       
         try {
           const docRef = await addDoc(collection(db, "Post"), {
-            name: 'Riddhi Kulkarni',
-            description: 'Test',
+            name: user.displayName,
+            description: user.email,
             message: input,
-            photoUrl: '',
+            photoUrl: user.photoUrl || "" ,
             timestamp: serverTimestamp(),
           });
       
