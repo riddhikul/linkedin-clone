@@ -3,20 +3,7 @@ import './Login.css';
 import { auth } from './firebee';
 import { useDispatch } from 'react-redux';
 import { login } from './features/counter/userSlice';
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-
-//const auth = getAuth();
-createUserWithEmailAndPassword(auth, email, password)
-  .then((userCredential) => {
-    // Signed in 
-    const user = userCredential.user;
-    // ...
-  })
-  .catch((error) => {
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    // ..
-  });
+import { getAuth, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -24,6 +11,7 @@ function Login() {
   const [name, setName] = useState('');
   const [profilePic, setProfilePic] = useState('');
   const dispatch = useDispatch();
+  const auth = getAuth();
 
   const register = () => {
     if (!name) {
@@ -31,26 +19,25 @@ function Login() {
       return;
     }
 
-    auth
-      .createUserWithEmailAndPassword(email, password)
-      .then((userAuth) => {
-        userAuth.user
-          .updateProfile({
-            displayName: name,
-            photoURL: profilePic,
-          })
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+
+        updateProfile(user, {
+          displayName: name,
+          photoURL: profilePic,
+        })
           .then(() => {
-            dispatch(
-              login({
-                email: userAuth.user.email,
-                uid: userAuth.user.uid,
-                displayName: name,
-                photoUrl: profilePic,
-              })
-            );
+            dispatch(login({
+              email: user.email,
+              uid: user.uid,
+              displayName: name,
+              photoUrl: profilePic,
+            }));
           })
           .catch((error) => alert(error.message));
-      });
+      })
+      .catch((error) => alert(error.message));
   };
 
   const loginToApp = (e) => {
@@ -107,3 +94,7 @@ function Login() {
 }
 
 export default Login;
+
+
+
+
