@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { login, logout, selectUser } from "./features/counter/userSlice";
 import Login from "./Login";
 import { auth } from "./firebee";
+import Widgets from "./Widgets";
 //import { unstable_createMuiStrictModeTheme } from "@mui/material";
 
 function App() {
@@ -47,7 +48,9 @@ function App() {
 
       {/*  Feed */}
       <Feed />
+
       {/* Widgets */}
+      <Widgets/>
     </div>
   )}
 </div>
