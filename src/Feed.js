@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { addDoc, collection, onSnapshot,setInput } from "firebase/firestore";
-import { db } from "./firebee";
+import { auth, db } from "./firebee";
 import './Feed.css';
 import Post from './Post';
 import CreateIcon from '@mui/icons-material/Create';
@@ -17,6 +17,7 @@ import 'firebase/firestore';
 import { serverTimestamp } from 'firebase/firestore';
 import { useSelector } from 'react-redux';
 import { selectUser } from './features/counter/userSlice';
+import { Avatar } from '@mui/material';
 // Other necessary imports
 
 
@@ -58,26 +59,33 @@ function Feed() {
         }
       };
       
-
+      
 
 
 
   return (
     <div className='feed'>
         <div className='feed_inputContainer'>
+          <div className='feed_bar'>
+          <Avatar className='feed__userPhoto' src={user.photoUrl}>{user.email[0]}</Avatar>
+
+        {/* <img src={auth.currentUser.photoUrl} alt="User" className="feed__userPhoto" /> */}
             <div className='feed__input'>
+         
                 <CreateIcon/>
                 <form>
-                    <input value={input} onChange={e => setInput(e.target.value)} type="text"/>
+                
+                    <input placeholder="Start a post" value={input} onChange={e => setInput(e.target.value)} type="text"/>
                     <button onClick={sendPost} type='submit'>Send</button>
                 </form>
 
             </div>
+            </div>
             <div className="feed_inputOptions">
                 <InputOption Icon={ImageIcon} title='Photo' color="#70B5F9"/>
-                <InputOption Icon={SubscriptionsRoundedIcon} title='Video' color="#E7A33E"/>
-                <InputOption Icon={EventNoteRoundedIcon} title='Event' color="#C0CBCD"/>
-                <InputOption Icon={CalendarViewDayRoundedIcon} title='Write article' color="#7FC15E"/>
+                <InputOption Icon={SubscriptionsRoundedIcon} title='Video' color="#7FC15E"/>
+                <InputOption Icon={EventNoteRoundedIcon} title='Event' color="#E7A33E"/>
+                <InputOption Icon={CalendarViewDayRoundedIcon} title='Write article' color="#E32423"/>
 
 
             </div>

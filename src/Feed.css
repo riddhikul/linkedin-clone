@@ -20,6 +20,17 @@
     padding: 10px;
     color: gray;
     padding-left: 15px;
+    margin-left: 15px;
+    /* display:flex; */
+}
+
+.feed_bar{
+    display: flex;
+
+    
+}
+.feed_bar>feed__userPhoto{
+    margin-right: 5px;
 }
 
 .feed__input>form{
@@ -42,3 +53,4 @@
     display: flex;
     justify-content: space-evenly;
 }
+

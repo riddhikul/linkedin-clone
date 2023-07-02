@@ -22,7 +22,7 @@ const recentItem=(topic)=>(
     <div className="sidebar">
         
         <div className='sidebar__top'>
-            <img src="./images/INSPIRE.png" alt=''/>
+            <img src="./images/banner_default.jpg" alt=''/>
             <Avatar className='sidebar_avatar' src={user.photoUrl}>{user.email[0]}</Avatar>
             
             <h2>{user.displayName}</h2>
@@ -34,11 +34,11 @@ const recentItem=(topic)=>(
         <div className="sidebar__stats">
            <div className='sidebar_stat'>
             <p>Who viewed you</p>
-            <p className="sidebar_statNumber">2,566</p>
+            <p className="sidebar_statNumber">1000</p>
            </div>
            <div className='sidebar_stat'>
-            <p>Views on post </p>
-            <p className="sidebar_statNumber">3,000</p>
+            <p>Impressions of your post </p>
+            <p className="sidebar_statNumber">5,466</p>
            </div>
 
 

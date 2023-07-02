@@ -20,8 +20,8 @@ function Widgets() {
         <InfoIcon />
       </div>
       {newsArticle('Iron man is back?', 'Top news ~ 9899 readers')}
-      {newsArticle('Iron man is back?', 'Top news ~ 9899 readers')}
-      {newsArticle('Iron man is back?', 'Top news ~ 9899 readers')}
+      {newsArticle('lorem ipsum', 'Top news ~ 9899 readers')}
+      {newsArticle('lorem ipsum', 'Top news ~ 9899 readers')}
 
     </div>
   );
