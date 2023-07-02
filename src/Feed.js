@@ -29,13 +29,14 @@ function Feed() {
 
     React.useEffect(() => {
       onSnapshot(collection(db, "Post"), (snapshot) => {
-        setState(snapshot.docs);
-        // console.log(snapshot.docs)
-        snapshot.docs.forEach((doc) => {
-          console.log(doc.data());
-        });
+        const postData = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          data: doc.data()
+        }));
+        setState(postData);
       });
     }, []);
+    
 
     const sendPost = async (e) => {
         e.preventDefault();
