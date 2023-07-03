@@ -1,5 +1,5 @@
-import React from 'react';
-import styled from '@emotion/styled';
+import React, { useState } from 'react';
+import styled from 'styled-components';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import { Avatar, TextareaAutosize } from '@mui/material';
 import { useSelector } from 'react-redux';
@@ -7,15 +7,27 @@ import { selectUser } from './features/counter/userSlice';
 import ImageIcon from '@mui/icons-material/Image';
 import VideocamRoundedIcon from '@mui/icons-material/VideocamRounded';
 import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
-import { useState } from 'react';
 
 const PostModal = (props) => {
   const user = useSelector(selectUser);
   const [editorText, setEditorText] = useState('');
+  const [shareImage, setShareImage] = useState('');
 
   const { isModalOpen, closeModal } = props;
 
   const isPostButtonDisabled = editorText.trim().length === 0;
+
+  const reset = (e) => {
+    setEditorText('');
+    props.handleClick(e);
+  };
+
+  const handlePost = (e) => {
+    e.preventDefault();
+    // Logic for posting the content
+    setEditorText('');
+    closeModal();
+  };
 
   return (
     <Container style={{ display: isModalOpen ? 'block' : 'none' }}>
@@ -28,10 +40,10 @@ const PostModal = (props) => {
         </HeaderPostModal>
         <SharedContent>
           <UserInfo>
-            <Avatar className="sidebar_avatar" src={user.photoUrl}>
-              {user.email[0]}
+            <Avatar className="sidebar_avatar" src={user?.photoUrl}>
+              {user?.email[0]}
             </Avatar>
-            <span>{user.displayName}</span>
+            <span>{user?.displayName}</span>
           </UserInfo>
           <Editor>
             <TextareaAutosize
@@ -56,7 +68,12 @@ const PostModal = (props) => {
               <ChatBubbleOutlineOutlinedIcon />
             </div>
           </ShareComment>
-          <PostButton disabled={isPostButtonDisabled}>Post</PostButton>
+          <PostButton
+            disabled={isPostButtonDisabled}
+            onClick={handlePost}
+          >
+            Post
+          </PostButton>
         </SharedCreation>
       </Content>
     </Container>
