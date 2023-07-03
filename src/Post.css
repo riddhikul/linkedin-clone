@@ -26,5 +26,6 @@
 }
 .post_button{
     display: flex;
-    justify-content: space-evenly;
+    justify-content: space-between;
+    font-size: 15px;
 }
