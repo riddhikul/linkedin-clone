@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { addDoc, collection, onSnapshot, serverTimestamp } from 'firebase/firestore';
+import {
+  addDoc,
+  collection,
+  onSnapshot,
+  serverTimestamp,
+} from 'firebase/firestore';
 import { useSelector } from 'react-redux';
 import { selectUser } from './features/counter/userSlice';
 import { Avatar } from '@mui/material';
@@ -11,13 +16,14 @@ import SubscriptionsRoundedIcon from '@mui/icons-material/SubscriptionsRounded';
 import EventNoteRoundedIcon from '@mui/icons-material/EventNoteRounded';
 import CalendarViewDayRoundedIcon from '@mui/icons-material/CalendarViewDayRounded';
 import FlipMove from 'react-flip-move';
-
 import { db } from './firebee';
+import PostModal from './PostModal';
 
 function Feed() {
   const user = useSelector(selectUser);
   const [input, setInput] = useState('');
   const [post, setPost] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, 'Post'), (snapshot) => {
@@ -35,7 +41,7 @@ function Feed() {
     e.preventDefault();
 
     try {
-      await addDoc(collection(db, 'Post'), {
+      const docRef = await addDoc(collection(db, 'Post'), {
         name: user.displayName,
         description: user.email,
         message: input,
@@ -43,10 +49,31 @@ function Feed() {
         timestamp: serverTimestamp(),
       });
 
+      const newPost = {
+        id: docRef.id,
+        data: {
+          name: user.displayName,
+          description: user.email,
+          message: input,
+          photoUrl: user.photoUrl || '',
+          timestamp: new Date().getTime(),
+        },
+      };
+
+      setPost([newPost, ...post]); // Add the new post at the beginning of the array
+
       setInput('');
     } catch (error) {
       console.error('Error adding post:', error);
     }
+  };
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
   };
 
   return (
@@ -63,6 +90,7 @@ function Feed() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 type="text"
+                onClick={openModal} // Open the post modal when clicked
               />
               <button onClick={sendPost} type="submit">
                 Send
@@ -78,7 +106,8 @@ function Feed() {
         </div>
       </div>
 
-      {/* Posts */}
+      <PostModal isModalOpen={isModalOpen} closeModal={closeModal} />
+
       <FlipMove>
         {post.map(({ id, data: { name, description, message, photoUrl } }) => (
           <Post
