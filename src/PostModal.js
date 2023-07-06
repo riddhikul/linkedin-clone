@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { selectUser } from './features/counter/userSlice';
+import { selectUser, addPost } from './features/counter/userSlice';
 import { Avatar, Button, Dialog, DialogContent, DialogTitle, IconButton, Input } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import { addPost } from './features/counter/userSlice';
-import './PostModal.css';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { db } from './firebee';
+import './PostModal.css';
 
 function PostModal({ isModalOpen, closeModal }) {
   const user = useSelector(selectUser);
@@ -17,20 +16,18 @@ function PostModal({ isModalOpen, closeModal }) {
     setInput(e.target.value);
   };
 
-  const handleSendPost = (e) => {
+  const handleSendPost = async (e) => {
     e.preventDefault();
 
-    console.log(`hello`)
-      const docRef =  addDoc(collection(db, 'post'), {
+    try {
+      const docRef = await addDoc(collection(db, 'post'), {
         name: user.displayName,
         description: user.email,
         message: input,
         photoUrl: user.photoUrl || '',
         timestamp: serverTimestamp(),
       });
-      console.log(docRef)
 
-      
       const newPost = {
         id: docRef.id,
         data: {
@@ -39,7 +36,15 @@ function PostModal({ isModalOpen, closeModal }) {
           message: input,
           photoUrl: user.photoUrl || '',
           timestamp: new Date().getTime(),
-        },}
+        },
+      };
+
+      dispatch(addPost(newPost));
+      setInput('');
+      closeModal();
+    } catch (error) {
+      console.error('Error adding post:', error);
+    }
   };
 
   return (
@@ -50,8 +55,12 @@ function PostModal({ isModalOpen, closeModal }) {
       </IconButton>
       <DialogContent>
         <div className="postModal__header">
-          <Avatar src={user.photoUrl}>{user.email[0]}</Avatar>
-          <h3>{user.displayName}</h3>
+          {user && (
+            <>
+              <Avatar src={user.photoUrl}>{user.email[0]}</Avatar>
+              <h3>{user.displayName}</h3>
+            </>
+          )}
         </div>
         <div className="postModal__body">
           <Input

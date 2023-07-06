@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  addDoc,
   collection,
   onSnapshot,
   serverTimestamp,
+  addDoc,
 } from 'firebase/firestore';
-import { selectUser, selectPosts, addPost } from './features/counter/userSlice';
 import { Avatar } from '@mui/material';
 import './Feed.css';
 import Post from './Post';
@@ -18,58 +17,25 @@ import CalendarViewDayRoundedIcon from '@mui/icons-material/CalendarViewDayRound
 import FlipMove from 'react-flip-move';
 import { db } from './firebee';
 import PostModal from './PostModal';
+import { selectUser, selectPosts, addPost } from './features/counter/userSlice';
 
+function Feed() {
+  const user = useSelector(selectUser);
+  const posts = useSelector(selectPosts);
+  const dispatch = useDispatch();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
+  useEffect(() => {
+    const unsubscribe = onSnapshot(collection(db, 'post'), (snapshot) => {
+      const postData = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        data: doc.data(),
+      }));
+      dispatch(addPost(postData.reverse()));
+    });
 
-  function Feed() {
-    const user = useSelector(selectUser);
-    const posts = useSelector(selectPosts);
-    const dispatch = useDispatch();
-    const [input, setInput] = useState('');
-    const [isModalOpen, setIsModalOpen] = useState(false);
-  
-    useEffect(() => {
-      const unsubscribe = onSnapshot(collection(db, 'post'), (snapshot) => {
-        const postData = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          data: doc.data(),
-        }));
-        dispatch(addPost(postData.reverse())); // Dispatch the addPost action with the posts in reverse order
-      });
-  
-      return () => unsubscribe();
-    }, [dispatch]);
-
-  const sendPost = async (e) => {
-    e.preventDefault();
-
-    console.log(`hello`)
-      const docRef =  await addDoc(collection(db, 'post'), {
-        name: user.displayName,
-        description: user.email,
-        message: input,
-        photoUrl: user.photoUrl || '',
-        timestamp: serverTimestamp(),
-      });
-      console.log(docRef)
-
-      const newPost = {
-        id: docRef.id,
-        data: {
-          name: user.displayName,
-          description: user.email,
-          message: input,
-          photoUrl: user.photoUrl || '',
-          timestamp: new Date().getTime(),
-        },
-      };
-
-      dispatch(addPost(newPost)); // Dispatch the addPost action with the new post
-      setInput('');
-    
-      console.error('Error adding post:');
-    
-  };
+    return () => unsubscribe();
+  }, [dispatch]);
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -87,50 +53,52 @@ import PostModal from './PostModal';
             {user.email[0]}
           </Avatar>
           <div className="feed__input">
-            <form>
-              <input
-                placeholder="Start a post"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                type="text"
-                onClick={openModal} // Open the post modal when clicked
-              />
-              <button onClick={(e)=> sendPost(e)}  type="submit">
-                Send
-              </button>
-            </form>
+            <input
+              placeholder="Start a post"
+              onClick={openModal} // Open the post modal when clicked
+              type="text"
+              readOnly
+            />
           </div>
         </div>
         <div className="feed_inputOptions">
           <InputOption Icon={ImageIcon} title="Photo" color="#70B5F9" />
-          <InputOption Icon={SubscriptionsRoundedIcon} title="Video" color="#7FC15E" />
+          <InputOption
+            Icon={SubscriptionsRoundedIcon}
+            title="Video"
+            color="#7FC15E"
+          />
           <InputOption Icon={EventNoteRoundedIcon} title="Event" color="#E7A33E" />
-          <InputOption Icon={CalendarViewDayRoundedIcon} title="Write article" color="#E32423" />
+          <InputOption
+            Icon={CalendarViewDayRoundedIcon}
+            title="Write article"
+            color="#E32423"
+          />
         </div>
       </div>
 
       <PostModal isModalOpen={isModalOpen} closeModal={closeModal} />
 
-      {/* <FlipMove> */}
-  {posts.map(({ id, data }) => {
-    if (!data) {
-      return null; // Skip rendering if data is undefined
-    }
-    const { name, description, message, photoUrl } = data;
-    if (!name) {
-      return null; // Skip rendering if 'name' is undefined
-    }
-    return (
-      <Post
-        key={id}
-        name={name}
-        description={description}
-        message={message}
-        photoUrl={photoUrl}
-      />
-    );
-  })}
-{/* </FlipMove> */}
+      <FlipMove>
+        {posts.map(({ id, data }) => {
+          if (!data) {
+            return null;
+          }
+          const { name, description, message, photoUrl } = data;
+          if (!name) {
+            return null;
+          }
+          return (
+            <Post
+              key={id}
+              name={name}
+              description={description}
+              message={message}
+              photoUrl={photoUrl}
+            />
+          );
+        })}
+      </FlipMove>
     </div>
   );
 }
