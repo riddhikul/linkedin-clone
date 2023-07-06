@@ -31,7 +31,7 @@ function Feed() {
       const postData = snapshot.docs
         .map((doc) => ({ id: doc.id, data: doc.data() }))
         .reverse();
-      dispatch(addPost(postData.reverse()));
+      dispatch(addPost(postData));
       setIsPostsLoaded(true);
       localStorage.setItem('posts', JSON.stringify(postData)); // Store posts in local storage
     });
@@ -87,17 +87,13 @@ function Feed() {
       </div>
 
       <PostModal isModalOpen={isModalOpen} closeModal={closeModal} />
-
       {isPostsLoaded && Array.isArray(posts) ? (
   <FlipMove>
-    {posts.slice().reverse().map(({ id, data }) => {
-      if (!data) {
+    {posts.slice().sort((a, b) => b.data.timestamp - a.data.timestamp).map(({ id, data }) => {
+      if (!data || !data.name) {
         return null;
       }
       const { name, description, message, photoUrl } = data;
-      if (!name) {
-        return null;
-      }
       return (
         <Post
           key={id}
@@ -112,6 +108,7 @@ function Feed() {
 ) : (
   <p>Loading posts...</p>
 )}
+
 
   
 
