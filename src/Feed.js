@@ -24,7 +24,9 @@ function Feed() {
   const posts = useSelector(selectPosts);
   const dispatch = useDispatch();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isPostsLoaded, setIsPostsLoaded] = useState(false); // New state variable
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedVideo, setSelectedVideo] = useState(null);
+  const [isPostsLoaded, setIsPostsLoaded] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, 'post'), (snapshot) => {
@@ -33,10 +35,9 @@ function Feed() {
         .reverse();
       dispatch(addPost(postData));
       setIsPostsLoaded(true);
-      localStorage.setItem('posts', JSON.stringify(postData)); // Store posts in local storage
+      localStorage.setItem('posts', JSON.stringify(postData));
     });
 
-    // Retrieve posts from local storage on component mount
     const savedPosts = JSON.parse(localStorage.getItem('posts'));
     if (savedPosts && savedPosts.length > 0) {
       dispatch(addPost(savedPosts));
@@ -54,6 +55,20 @@ function Feed() {
     setIsModalOpen(false);
   };
 
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedImage(file);
+    }
+  };
+
+  const handleVideoUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedVideo(file);
+    }
+  };
+
   return (
     <div className="feed">
       <div className="feed_inputContainer">
@@ -64,20 +79,42 @@ function Feed() {
           <div className="feed__input">
             <input
               placeholder="Start a post"
-              onClick={openModal} // Open the post modal when clicked
+              onClick={openModal}
               type="text"
               readOnly
             />
           </div>
         </div>
         <div className="feed_inputOptions">
-          <InputOption Icon={ImageIcon} title="Photo" color="#70B5F9" />
-          <InputOption
-            Icon={SubscriptionsRoundedIcon}
-            title="Video"
-            color="#7FC15E"
+          <label htmlFor="image-upload">
+            <InputOption Icon={ImageIcon} title="Photo" color="#70B5F9" />
+          </label>
+          <input
+            id="image-upload"
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+            style={{ display: 'none' }}
           />
-          <InputOption Icon={EventNoteRoundedIcon} title="Event" color="#E7A33E" />
+          <label htmlFor="video-upload">
+            <InputOption
+              Icon={SubscriptionsRoundedIcon}
+              title="Video"
+              color="#7FC15E"
+            />
+          </label>
+          <input
+            id="video-upload"
+            type="file"
+            accept="video/*"
+            onChange={handleVideoUpload}
+            style={{ display: 'none' }}
+          />
+          <InputOption
+            Icon={EventNoteRoundedIcon}
+            title="Event"
+            color="#E7A33E"
+          />
           <InputOption
             Icon={CalendarViewDayRoundedIcon}
             title="Write article"
@@ -86,34 +123,39 @@ function Feed() {
         </div>
       </div>
 
-      <PostModal isModalOpen={isModalOpen} closeModal={closeModal} />
+      <PostModal
+        isModalOpen={isModalOpen}
+        closeModal={closeModal}
+        selectedImage={selectedImage}
+        selectedVideo={selectedVideo}
+      />
+
       {isPostsLoaded && Array.isArray(posts) ? (
-  <FlipMove>
-    {posts.slice().sort((a, b) => b.data.timestamp - a.data.timestamp).map(({ id, data }) => {
-      if (!data || !data.name) {
-        return null;
-      }
-      const { name, description, message, photoUrl } = data;
-      return (
-        <Post
-          key={id}
-          name={name}
-          description={description}
-          message={message}
-          photoUrl={photoUrl}
-        />
-      );
-    })}
-  </FlipMove>
-) : (
-  <p>Loading posts...</p>
-)}
-
-
-  
-
-</div>
-);
+        <FlipMove>
+          {posts
+            .slice()
+            .sort((a, b) => b.data.timestamp - a.data.timestamp)
+            .map(({ id, data }) => {
+              if (!data || !data.name) {
+                return null;
+              }
+              const { name, description, message, photoUrl } = data;
+              return (
+                <Post
+                  key={id}
+                  name={name}
+                  description={description}
+                  message={message}
+                  photoUrl={photoUrl}
+                />
+              );
+            })}
+        </FlipMove>
+      ) : (
+        <p>Loading posts...</p>
+      )}
+    </div>
+  );
 }
 
-export default Feed;  
+export default Feed;
