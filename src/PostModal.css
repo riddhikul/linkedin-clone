@@ -9,15 +9,10 @@
 
 .postModal__header {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   padding: 10px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-.postModal__header h3 {
-  margin: 0;
-  font-size: 18px;
 }
 
 .postModal__close {

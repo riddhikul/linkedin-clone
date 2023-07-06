@@ -24,15 +24,24 @@ function Feed() {
   const posts = useSelector(selectPosts);
   const dispatch = useDispatch();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isPostsLoaded, setIsPostsLoaded] = useState(false); // New state variable
 
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, 'post'), (snapshot) => {
-      const postData = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        data: doc.data(),
-      }));
+      const postData = snapshot.docs
+        .map((doc) => ({ id: doc.id, data: doc.data() }))
+        .reverse();
       dispatch(addPost(postData.reverse()));
+      setIsPostsLoaded(true);
+      localStorage.setItem('posts', JSON.stringify(postData)); // Store posts in local storage
     });
+
+    // Retrieve posts from local storage on component mount
+    const savedPosts = JSON.parse(localStorage.getItem('posts'));
+    if (savedPosts && savedPosts.length > 0) {
+      dispatch(addPost(savedPosts));
+      setIsPostsLoaded(true);
+    }
 
     return () => unsubscribe();
   }, [dispatch]);
@@ -79,28 +88,35 @@ function Feed() {
 
       <PostModal isModalOpen={isModalOpen} closeModal={closeModal} />
 
-      <FlipMove>
-        {posts.map(({ id, data }) => {
-          if (!data) {
-            return null;
-          }
-          const { name, description, message, photoUrl } = data;
-          if (!name) {
-            return null;
-          }
-          return (
-            <Post
-              key={id}
-              name={name}
-              description={description}
-              message={message}
-              photoUrl={photoUrl}
-            />
-          );
-        })}
-      </FlipMove>
-    </div>
-  );
+      {isPostsLoaded && Array.isArray(posts) ? (
+  <FlipMove>
+    {posts.slice().reverse().map(({ id, data }) => {
+      if (!data) {
+        return null;
+      }
+      const { name, description, message, photoUrl } = data;
+      if (!name) {
+        return null;
+      }
+      return (
+        <Post
+          key={id}
+          name={name}
+          description={description}
+          message={message}
+          photoUrl={photoUrl}
+        />
+      );
+    })}
+  </FlipMove>
+) : (
+  <p>Loading posts...</p>
+)}
+
+  
+
+</div>
+);
 }
 
-export default Feed;
+export default Feed;  

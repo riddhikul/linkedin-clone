@@ -15,10 +15,9 @@ function PostModal({ isModalOpen, closeModal }) {
   const handleInputChange = (e) => {
     setInput(e.target.value);
   };
-
   const handleSendPost = async (e) => {
     e.preventDefault();
-
+  
     try {
       const docRef = await addDoc(collection(db, 'post'), {
         name: user.displayName,
@@ -27,7 +26,7 @@ function PostModal({ isModalOpen, closeModal }) {
         photoUrl: user.photoUrl || '',
         timestamp: serverTimestamp(),
       });
-
+  
       const newPost = {
         id: docRef.id,
         data: {
@@ -38,7 +37,7 @@ function PostModal({ isModalOpen, closeModal }) {
           timestamp: new Date().getTime(),
         },
       };
-
+  
       dispatch(addPost(newPost));
       setInput('');
       closeModal();
@@ -46,22 +45,19 @@ function PostModal({ isModalOpen, closeModal }) {
       console.error('Error adding post:', error);
     }
   };
+  
 
   return (
     <Dialog open={isModalOpen} onClose={closeModal}>
       <DialogTitle>Create a post</DialogTitle>
-      <IconButton className="postModal__close" onClick={closeModal}>
-        <CloseIcon />
-      </IconButton>
+      <div className="postModal__header">
+        <Avatar src={user.photoUrl} alt={user.displayName} />
+        <h3>{user.displayName}</h3>
+        <IconButton className="postModal__close" onClick={closeModal}>
+          <CloseIcon />
+        </IconButton>
+      </div>
       <DialogContent>
-        <div className="postModal__header">
-          {user && (
-            <>
-              <Avatar src={user.photoUrl}>{user.email[0]}</Avatar>
-              <h3>{user.displayName}</h3>
-            </>
-          )}
-        </div>
         <div className="postModal__body">
           <Input
             placeholder="What do you want to talk about?"
@@ -73,7 +69,7 @@ function PostModal({ isModalOpen, closeModal }) {
           />
         </div>
         <div className="postModal__footer">
-          <Button className="postModal__send" onClick={handleSendPost}>
+          <Button className="postModal__button" onClick={handleSendPost}>
             Send
           </Button>
         </div>

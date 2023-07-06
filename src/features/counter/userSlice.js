@@ -1,11 +1,13 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+const initialState = {
+  user: null,
+  posts: [],
+};
+
 const userSlice = createSlice({
   name: 'user',
-  initialState: {
-    user: null,
-    posts: [],
-  },
+  initialState,
   reducers: {
     login: (state, action) => {
       state.user = action.payload;
@@ -14,7 +16,7 @@ const userSlice = createSlice({
       state.user = null;
     },
     addPost: (state, action) => {
-      state.posts.unshift(action.payload);
+      state.posts = action.payload;
     },
   },
 });
