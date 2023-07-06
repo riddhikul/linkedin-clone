@@ -8,7 +8,6 @@ import { login, logout, selectUser } from "./features/counter/userSlice";
 import Login from "./Login";
 import { auth } from "./firebee";
 import Widgets from "./Widgets";
-//import { unstable_createMuiStrictModeTheme } from "@mui/material";
 
 function App() {
   const user = useSelector(selectUser);
@@ -31,34 +30,24 @@ function App() {
         dispatch(logout());
       }
     });
-  }, []);
+  }, [dispatch]);
   
+  
+
   return (
     <div className="app">
       <Header />
-{/* 
-      <div className="app">
-  <Header /> */}
 
-  {!user ? (<Login />) : (
-    /* App Body */
-    <div className="app__body">
-      {/* Sidebar */}
-      <Sidebar />
-
-      {/*  Feed */}
-      <Feed />
-
-      {/* Widgets */}
-      <Widgets/>
+      {!user ? (
+        <Login />
+      ) : (
+        <div className="app__body">
+          <Sidebar />
+          <Feed user={user} /> {/* Pass the user data as a prop */}
+          <Widgets />
+        </div>
+      )}
     </div>
-  )}
-</div>
-
-
-      
-      
-  
   );
 }
 

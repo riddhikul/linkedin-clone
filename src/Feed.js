@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import {
   addDoc,
   collection,
   onSnapshot,
   serverTimestamp,
 } from 'firebase/firestore';
-import { useSelector } from 'react-redux';
-import { selectUser } from './features/counter/userSlice';
+import { selectUser, selectPosts, addPost } from './features/counter/userSlice';
 import { Avatar } from '@mui/material';
 import './Feed.css';
 import Post from './Post';
@@ -19,35 +19,39 @@ import FlipMove from 'react-flip-move';
 import { db } from './firebee';
 import PostModal from './PostModal';
 
-function Feed() {
-  const user = useSelector(selectUser);
-  const [input, setInput] = useState('');
-  const [post, setPost] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  useEffect(() => {
-    const unsubscribe = onSnapshot(collection(db, 'Post'), (snapshot) => {
-      const postData = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        data: doc.data(),
-      }));
-      setPost(postData.reverse()); // Reverse the array to display newest posts on top
-    });
 
-    return () => unsubscribe();
-  }, []);
+  function Feed() {
+    const user = useSelector(selectUser);
+    const posts = useSelector(selectPosts);
+    const dispatch = useDispatch();
+    const [input, setInput] = useState('');
+    const [isModalOpen, setIsModalOpen] = useState(false);
+  
+    useEffect(() => {
+      const unsubscribe = onSnapshot(collection(db, 'post'), (snapshot) => {
+        const postData = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          data: doc.data(),
+        }));
+        dispatch(addPost(postData.reverse())); // Dispatch the addPost action with the posts in reverse order
+      });
+  
+      return () => unsubscribe();
+    }, [dispatch]);
 
   const sendPost = async (e) => {
     e.preventDefault();
 
-    try {
-      const docRef = await addDoc(collection(db, 'Post'), {
+    console.log(`hello`)
+      const docRef =  await addDoc(collection(db, 'post'), {
         name: user.displayName,
         description: user.email,
         message: input,
         photoUrl: user.photoUrl || '',
         timestamp: serverTimestamp(),
       });
+      console.log(docRef)
 
       const newPost = {
         id: docRef.id,
@@ -60,12 +64,11 @@ function Feed() {
         },
       };
 
-      setPost([newPost, ...post]); // Add the new post at the beginning of the array
-
+      dispatch(addPost(newPost)); // Dispatch the addPost action with the new post
       setInput('');
-    } catch (error) {
-      console.error('Error adding post:', error);
-    }
+    
+      console.error('Error adding post:');
+    
   };
 
   const openModal = () => {
@@ -92,7 +95,7 @@ function Feed() {
                 type="text"
                 onClick={openModal} // Open the post modal when clicked
               />
-              <button onClick={sendPost} type="submit">
+              <button onClick={(e)=> sendPost(e)}  type="submit">
                 Send
               </button>
             </form>
@@ -108,17 +111,26 @@ function Feed() {
 
       <PostModal isModalOpen={isModalOpen} closeModal={closeModal} />
 
-      <FlipMove>
-        {post.map(({ id, data: { name, description, message, photoUrl } }) => (
-          <Post
-            key={id}
-            name={name}
-            description={description}
-            message={message}
-            photoUrl={photoUrl}
-          />
-        ))}
-      </FlipMove>
+      {/* <FlipMove> */}
+  {posts.map(({ id, data }) => {
+    if (!data) {
+      return null; // Skip rendering if data is undefined
+    }
+    const { name, description, message, photoUrl } = data;
+    if (!name) {
+      return null; // Skip rendering if 'name' is undefined
+    }
+    return (
+      <Post
+        key={id}
+        name={name}
+        description={description}
+        message={message}
+        photoUrl={photoUrl}
+      />
+    );
+  })}
+{/* </FlipMove> */}
     </div>
   );
 }
