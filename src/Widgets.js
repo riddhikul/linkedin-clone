@@ -19,9 +19,9 @@ function Widgets() {
         <h2>LinkedIn News</h2>
         <InfoIcon />
       </div>
-      {newsArticle('Iron man is back?', 'Top news ~ 9899 readers')}
-      {newsArticle('lorem ipsum', 'Top news ~ 9899 readers')}
-      {newsArticle('lorem ipsum', 'Top news ~ 9899 readers')}
+      {newsArticle('Iron man is back? ', 'Top news ~ 9899 readers')}
+      {newsArticle('New work from home sources', 'Top news ~ 9500 readers')}
+      {newsArticle('Weekly Tech News 101', 'Top news ~ 9899 readers')}
 
     </div>
   );
