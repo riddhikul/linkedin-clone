@@ -1,11 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import {
-  collection,
-  onSnapshot,
-  query,
-  orderBy,
-} from "firebase/firestore";
+import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
 import { Avatar } from "@mui/material";
 import "./Feed.css";
 import Post from "./Post";
@@ -144,7 +139,8 @@ function Feed() {
               if (!data || !data.name) {
                 return null;
               }
-              const { name, description, message, photoUrl } = data;
+              const { name, description, message, photoUrl, timestamp } = data;
+              console.log({ name, description, message, photoUrl, timestamp });
               return (
                 <Post
                   key={id}
@@ -152,6 +148,7 @@ function Feed() {
                   description={description}
                   message={message}
                   photoUrl={photoUrl}
+                  timestamp={timestamp}
                 />
               );
             })}
