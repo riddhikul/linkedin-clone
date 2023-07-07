@@ -4,7 +4,7 @@ import { getAuth } from "firebase/auth";
 import "firebase/storage";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDIFH6fVWyJbavkZMsNZqyMfCtlKAXEz00",
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
   authDomain: "linkedin-yt-77f81.firebaseapp.com",
   projectId: "linkedin-yt-77f81",
   storageBucket: "linkedin-yt-77f81.appspot.com",

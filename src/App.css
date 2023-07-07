@@ -8,6 +8,7 @@
 
 .app__body{
     display:flex;
+    
     margin-top: 25px;
     margin-left: 20px;
     max-width: 1200px;
